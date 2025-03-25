@@ -5,11 +5,11 @@ from sklearn.datasets import make_classification
 from scipy.optimize import minimize
 
 if __name__ == "__main__":
-    n_train = 150
+    n_train = 800
     n_test = 50
     n_samples = n_train + n_test
     n_features = 2
-    n_nodes = 3
+    n_nodes = 8
 
     X, y = make_classification(
         n_samples=n_samples,
@@ -17,7 +17,7 @@ if __name__ == "__main__":
         n_informative=n_features,
         n_redundant=0,
         n_clusters_per_class=1,
-        random_state=51,
+        random_state=54,
     )
 
     y = np.where(y == 0, -1, 1)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         X_train[y_train == -1, 0],
         X_train[y_train == -1, 1],
         color="red",
-        label="Class 0",
+        label="Class -1",
         alpha=0.6,
     )
     ax1.scatter(
@@ -84,16 +84,20 @@ if __name__ == "__main__":
         os.path.join(figures_dir, "decision_boundary.png"), dpi=300, bbox_inches="tight"
     )
 
-    data_feature_dir = os.path.join("data", "feature")
-    data_label_dir = os.path.join("data", "label")
-    os.makedirs(data_feature_dir, exist_ok=True)
-    os.makedirs(data_label_dir, exist_ok=True)
+    data_dir = "data"
+    os.makedirs(data_dir, exist_ok=True)
 
-    split_X_train_hat = np.array_split(X_train_hat, n_nodes)
-    split_y_train = np.array_split(y_train, n_nodes)
+    # Create train directories and save data
+    for i, (sub_X_train_hat, sub_y_train) in enumerate(
+        zip(np.array_split(X_train_hat, n_nodes), np.array_split(y_train, n_nodes))
+    ):
+        train_dir = os.path.join(data_dir, f"train_{i + 1}")
+        os.makedirs(train_dir, exist_ok=True)
+        np.save(os.path.join(train_dir, "feature.npy"), sub_X_train_hat)
+        np.save(os.path.join(train_dir, "label.npy"), sub_y_train)
 
-    for i, sub_X_train_hat in enumerate(split_X_train_hat):
-        np.save(os.path.join(data_feature_dir, f"node_{i + 1}.npy"), sub_X_train_hat)
-
-    for i, sub_y_train in enumerate(split_y_train):
-        np.save(os.path.join(data_label_dir, f"node_{i + 1}.npy"), sub_y_train)
+    # Create test directory and save data
+    test_dir = os.path.join(data_dir, "test")
+    os.makedirs(test_dir, exist_ok=True)
+    np.save(os.path.join(test_dir, "feature.npy"), X_test)
+    np.save(os.path.join(test_dir, "label.npy"), y_test)
