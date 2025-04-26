@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.datasets import make_classification
 from scipy.optimize import minimize
 
@@ -47,44 +46,8 @@ if __name__ == "__main__":
     accuracy = np.sum(np.where(X_test @ w + b > 0, 1, -1) == y_test) / n_test
     print(f"accuracy = {accuracy}")
 
-    fig1, ax1 = plt.subplots()
-    ax1.scatter(
-        X_train[y_train == -1, 0],
-        X_train[y_train == -1, 1],
-        color="red",
-        label="Class -1",
-        alpha=0.6,
-    )
-    ax1.scatter(
-        X_train[y_train == 1, 0],
-        X_train[y_train == 1, 1],
-        color="blue",
-        label="Class 1",
-        alpha=0.6,
-    )
-
-    ax1.set_title("Generated Binary Classification Data")
-    ax1.set_xlabel("Feature 1")
-    ax1.set_ylabel("Feature 2")
-
-    x_min, x_max = plt.xlim()
-    y_min, y_max = plt.ylim()
-
-    x_boundary = np.linspace(x_min, x_max, 100)
-    y_boundary = -(w[0] * x_boundary + b) / w[1]
-
-    ax1.plot(x_boundary, y_boundary, "--", color="green", label="Decision Boundary")
-
-    ax1.legend()
-    ax1.grid()
-
-    figures_dir = os.path.join("figures")
-    os.makedirs(figures_dir, exist_ok=True)
-    fig1.savefig(
-        os.path.join(figures_dir, "decision_boundary.png"), dpi=300, bbox_inches="tight"
-    )
-
-    data_dir = "data"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(script_dir, "data")
     os.makedirs(data_dir, exist_ok=True)
 
     # Create train directories and save data
